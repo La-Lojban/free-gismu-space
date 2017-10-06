@@ -1,3 +1,4 @@
+//the list of official gismu
 const all_off_gismu = [
   "bacru",
   "badna",
@@ -1392,6 +1393,7 @@ const all_off_gismu = [
   "zutse",
   "zvati"
 ];
+//regular expressions for gismu forms
 const C = "(" +
 "[bcdfgjklmnprstvxz]" + ")";
 const V = "(" +
@@ -1409,11 +1411,15 @@ const CyC = "(" +
 const CCV = "(" + CC + V + ")";
 const CVV = "(" + C + "(?:ai|au|ei|oi|" + V + "'" + V + ")" + ")";
 const CVC = "(" + C + V + C + ")";
+//this is the complete regular expression matching any possible gismu and only them
 const gismu = "^(" + CC + V + C + "|" + C + V + C_C + ")" + V + "$";
-const alphabet = "abcdefgijklmnoprstuvxz".split("");
-
+//Regular expression pattern
 const pat = new RegExp(gismu);
 
+//Lojban alphabet
+const alphabet = "abcdefgijklmnoprstuvxz".split("");
+
+//just create an array of 5-letter sequences from "aaaaa" to "zzzzz"
 const allArrays = [alphabet, alphabet, alphabet, alphabet, alphabet];
 function allPossibleCases(arr) {
   if (arr.length === 0) {
@@ -1431,7 +1437,10 @@ function allPossibleCases(arr) {
     return result;
   }
 }
+//Now filter those sequences that are match our regular expression. We get the array of all possible gismu
+const all_possible_gismu = allPossibleCases(allArrays).filter(candidate => pat.test(candidate));
 
+//Here are the rules for clashes between official gismu. The first letter is for the candidate gismu, the second is for an already existing gismu. Taken from http://lojban.org/publications/cll/cll_v1.1_xhtml-section-chunks/section-gismu-making.html
 const clashing_letters = [
   [
     "b", "p"
@@ -1516,14 +1525,15 @@ const clashing_letters = [
   ],
   ["z", "s"]
 ];
-//2. We create a gismu
-const all_possible_gismu = allPossibleCases(allArrays).filter(candidate => pat.test(candidate));
 
+//check if a given candidate word is blocked by any of the existing gismu. arr_existing is the array of existing gismu including experimental ones created by this program
 function IsInConflict(candidate, arr_existing) {
   if (arr_existing.map(i => i.slice(0, 4)).includes(candidate.slice(0, 4)))
     return true;
   const c_arr = candidate.split("");
+  //we need to check every letter of the candidate separately
   for (let i = 0; i < c_arr.length; i++) {
+    //we need to check every rule
     for (let j = 0; j < clashing_letters.length; j++) {
       let c_arr_new = c_arr;
       c_arr_new[i] = c_arr_new[i].replace(clashing_letters[j][0], clashing_letters[j][1]);
@@ -1533,10 +1543,14 @@ function IsInConflict(candidate, arr_existing) {
     }
   return false;
 }
+//initially our array of experimental gismu is empty
 let all_exp_gismu = [];
 const shuffleSeed = require('shuffle-seed');
+//shuffle the array of possible gismu using a seed. The seed provides a reproducible reshuffling. Change the second argument to another value to reshuffle the array in a new way
 const shuffled = shuffleSeed.shuffle(all_possible_gismu, "a");
+//the output will contain formatted information about each new experimental gismu and its position in the array of all possible gismu
 let output=[];
+//for every new possible gismu check for clashes with official or experimental gismu added in earlier cycles
 function CheckConflicts() {
   for (let i = 0; i < shuffled.length; i++) {
     const c_gismu = shuffled[i];
@@ -1549,7 +1563,9 @@ function CheckConflicts() {
   }
 }
 CheckConflicts();
+//show how many experimental gismu we found
 console.log(all_exp_gismu.length);
+//write the output to a file
 var fs = require('fs');
 var path = require('path-extra');
 fs.writeFileSync("new-gismu.txt", output.join("\n"), 'utf8', function(err) {
@@ -1557,17 +1573,3 @@ fs.writeFileSync("new-gismu.txt", output.join("\n"), 'utf8', function(err) {
     return console.log(err);
   }
 );
-//outputs ["acd", "bcd", "azd", "bzd", "ace", "bce", "aze", "bze", "
-
-/*
-1. list of existing gismu
-3. check against list of 1. if blocked by rule
-4. one by one replace each letter into the right one, see if any matches. also see if differ in the last vowel only (gism==gism)
-gismu_character_array = gismu.split("");
-proposed gismu	existing gismu
-
-
-5. if not blocked add.
-6. repeat 1-5 100 times
-7. counts number of gismu
-*/
