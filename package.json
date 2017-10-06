@@ -1,0 +1,11 @@
+{
+  "name": "free-gismu-space",
+  "version": "1.0.0",
+  "description": "A too lto determine the number of possible gismu",
+  "main": "se_klani_belerokahegismu.js",
+  "author": "La Gleki <gleki.is.my.name@gmail.com> (https://jbotcan.org)",
+  "license": "ISC",
+  "dependencies": {
+    "shuffle-seed": "^1.1.6"
+  }
+}
