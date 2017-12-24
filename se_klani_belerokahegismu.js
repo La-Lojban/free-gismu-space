@@ -1535,7 +1535,7 @@ function IsInConflict(candidate, arr_existing) {
   for (let i = 0; i < c_arr.length; i++) {
     //we need to check every rule
     for (let j = 0; j < clashing_letters.length; j++) {
-      let c_arr_new = c_arr;
+      let c_arr_new = c_arr.slice();
       c_arr_new[i] = c_arr_new[i].replace(clashing_letters[j][0], clashing_letters[j][1]);
       if (arr_existing.includes(c_arr_new.join("")))
         return true;
