@@ -1394,51 +1394,55 @@ const all_off_gismu = [
   "zvati"
 ];
 //regular expressions for gismu forms
-const C = "(" +
-"[bcdfgjklmnprstvxz]" + ")";
-const V = "(" +
-"[aeiou]" + ")";
-const Vy = "(" +
-"[aeiouy]" + ")";
-const CC = "(" +
-"[bcfgkmpsvx][lr]|[td]r|[cs][pftkmn]|[jz][bvdgm]|t[cs]|d[jz]" + ")";
-const C_C = "(" +
-"[bdgjvzcfkpstx][lrmn]|[lrn][bdgjvzcfkpstx]|b[dgjvz]|d[bgjvz]|g[bdjvz]|j[bdgv]|v[bdgjz]|z[bdgv]|c[fkpt]|f[ckpstx]|k[cfpst]|p[cfkstx]|s[fkptx]|t[cfkpsx]|x[fpst]|l[rmn]|r[lmn]|m[lrnbdgjvcfkpstx]|n[lrm]" + ")";
-const CxC = "(" +
-"[lmnr][bcdfgjkpstvx]|l[mnrz]|mn|n[lmrz]|r[lmnz]|b[dgjmnvz]|d[bglmnv]|g[bdjmnvz]|[jz][lnr]|v[bdgjmnz]|f[ckmnpstx]|k[cfmnpst]|p[cfkmnstx]|sx|t[fklmnpx]|x[fmnpst]" + ")";
-const CyC = "(" +
-"(" + C + ")\\2|[bdgjvz][cfkpstx]|[cfkpstx][bdgjvz]|[cjsz]{2,2}|[ck]x|x[ck]|mz" + ")";
-const CCV = "(" + CC + V + ")";
-const CVV = "(" + C + "(?:ai|au|ei|oi|" + V + "'" + V + ")" + ")";
-const CVC = "(" + C + V + C + ")";
+const C = "(" + "[bcdfgjklmnprstvxz]" + ")";
+const V = "(" + "[aeiou]" + ")";
+const Vy = "(" + "[aeiouy]" + ")";
+const D = "(" + "[bcfgkmpsvx][lr]|[td]r|[cs][pftkmn]|[jz][bvdgm]|t[cs]|d[jz]" + ")";
+const C_C = "(" + "[bdgjvzcfkpstx][lrmn]|[lrn][bdgjvzcfkpstx]|b[dgjvz]|d[bgjvz]|g[bdjvz]|j[bdgv]|v[bdgjz]|z[bdgv]|c[fkpt]|f[ckpstx]|k[cfpst]|p[cfkstx]|s[fkptx]|t[cfkpsx]|x[fpst]|l[rmn]|r[lmn]|m[lrnbdgjvcfkpstx]|n[lrm]" + ")";
+const R = "(" + "[lmnr][bcdfgjkpstvx]|l[mnrz]|mn|n[lmrz]|r[lmnz]|b[dgjmnvz]|d[bglmnv]|g[bdjmnvz]|[jz][lnr]|v[bdgjmnz]|f[ckmnpstx]|k[cfmnpst]|p[cfkmnstx]|sx|t[fklmnpx]|x[fmnpst]" + ")";
+const CyC = `((${C})\\2|[bdgjvz][cfkpstx]|[cfkpstx][bdgjvz]|[cjsz]{2,2}|[ck]x|x[ck]|mz)`;
+const T = "(cfr|cfl|sfr|sfl|jvr|jvl|zvr|zvl|cpr|cpl|spr|spl|jbr|jbl|zbr|zbl|ckr|ckl|skr|skl|jgr|jgl|zgr|zgl|ctr|str|jdr|zdr|cmr|cml|smr|sml|jmr|jml|zmr|zml)";
+const CCV = `(${D}${V})`;
+const CVV = `(${C}(?:ai|au|ei|oi|${V}'${V}))`;
+const CVC = `(${C}${V}${C})`;
 //this is the complete regular expression matching any possible gismu and only them
-const gismu = "^(" + CC + V + C + "|" + C + V + C_C + ")" + V + "$";
-//Regular expression pattern
-const pat = new RegExp(gismu);
+const gismu = `(${D}${V}${C}|${C}${V}${C_C})${V}`;
+/*
+  //First bruteforce method. Just create an array of 5-letter sequences from "aaaaa" to "zzzzz"
+  //Regular expression pattern
+  const pat = new RegExp(gismu);
 
-//Lojban alphabet
-const alphabet = "abcdefgijklmnoprstuvxz".split("");
+  //Lojban alphabet
+  const alphabet = "abcdefgijklmnoprstuvxz".split("");
 
-//just create an array of 5-letter sequences from "aaaaa" to "zzzzz"
-const allArrays = [alphabet, alphabet, alphabet, alphabet, alphabet];
-function allPossibleCases(arr) {
-  if (arr.length === 0) {
-    return [];
-  } else if (arr.length === 1) {
-    return arr[0];
-  } else {
-    let result = [];
-    const allCasesOfRest = allPossibleCases(arr.slice(1));
-    for (let c in allCasesOfRest) {
-      for (let i = 0; i < arr[0].length; i++) {
-        result.push(arr[0][i] + allCasesOfRest[c]);
+  const allArrays = [alphabet, alphabet, alphabet, alphabet, alphabet];
+  function allPossibleCases(arr) {
+    if (arr.length === 0) {
+      return [];
+    } else if (arr.length === 1) {
+      return arr[0];
+    } else {
+      let result = [];
+      const allCasesOfRest = allPossibleCases(arr.slice(1));
+      for (let c in allCasesOfRest) {
+        for (let i = 0; i < arr[0].length; i++) {
+          result.push(arr[0][i] + allCasesOfRest[c]);
+        }
       }
+      return result;
     }
-    return result;
   }
-}
+  //Now filter those sequences that are match our regular expression. We get the array of all possible gismu
+  const all_possible_gismu = allPossibleCases(allArrays).filter(candidate => pat.test(candidate));
+*/
+
+//Another smarter method of generating all possible gismu from their regexp. Credits to https://www.npmjs.com/package/pxeger library
+const fs = require("fs"),
+  path = require("path-extra"),
+  PEG = require('pegjs');
 //Now filter those sequences that are match our regular expression. We get the array of all possible gismu
-const all_possible_gismu = allPossibleCases(allArrays).filter(candidate => pat.test(candidate));
+const grammar = fs.readFileSync(path.join(__dirname, 'pxeger.pegjs'), 'utf-8').toString('utf-8');
+const all_possible_gismu = require("pegjs").buildParser(grammar).parse(gismu);
 
 //Here are the rules for clashes between official gismu. The first letter is for the candidate gismu, the second is for an already existing gismu. Taken from http://lojban.org/publications/cll/cll_v1.1_xhtml-section-chunks/section-gismu-making.html
 const clashing_letters = [
@@ -1539,8 +1543,8 @@ function IsInConflict(candidate, arr_existing) {
       c_arr_new[i] = c_arr_new[i].replace(clashing_letters[j][0], clashing_letters[j][1]);
       if (arr_existing.includes(c_arr_new.join("")))
         return true;
-      }
     }
+  }
   return false;
 }
 //initially our array of experimental gismu is empty
@@ -1549,27 +1553,23 @@ const shuffleSeed = require('shuffle-seed');
 //shuffle the array of possible gismu using a seed. The seed provides a reproducible reshuffling. Change the second argument to another value to reshuffle the array in a new way
 const shuffled = shuffleSeed.shuffle(all_possible_gismu, "a");
 //the output will contain formatted information about each new experimental gismu and its position in the array of all possible gismu
-let output=[];
+let output = [];
 //for every new possible gismu check for clashes with official or experimental gismu added in earlier cycles
 function CheckConflicts() {
-  for (let i = 0; i < shuffled.length; i++) {
-    const c_gismu = shuffled[i];
+  shuffled.forEach((c_gismu, i) => {
     all_off_exp_gismu = all_off_gismu.concat(all_exp_gismu);
     if (!IsInConflict(c_gismu, all_off_exp_gismu)) {
       console.log(c_gismu, all_exp_gismu.length, (i * 100 / all_possible_gismu.length).toFixed(2));
       all_exp_gismu.push(c_gismu);
-      output.push(c_gismu+"\t"+i)
+      output.push(`${c_gismu}\t${i}`)
     }
-  }
+  });
 }
 CheckConflicts();
 //show how many experimental gismu we found
 console.log(all_exp_gismu.length);
 //write the output to a file
-var fs = require('fs');
-var path = require('path-extra');
-fs.writeFileSync("new-gismu.txt", output.join("\n"), 'utf8', function(err) {
+fs.writeFileSync("new-gismu.txt", output.join("\n"), 'utf8', err => {
   if (err)
     return console.log(err);
-  }
-);
+});
