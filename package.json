@@ -6,6 +6,7 @@
   "author": "La Gleki <gleki.is.my.name@gmail.com> (https://jbotcan.org)",
   "license": "ISC",
   "dependencies": {
-    "shuffle-seed": "^1.1.6"
+    "shuffle-seed": "^1.1.6",
+    "pegjs": "^0.7.0"
   }
 }
